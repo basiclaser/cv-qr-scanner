@@ -5,6 +5,18 @@ function stf(input) {
 
 let detectedCodes = []
 
+
+const data = [5,4,3,2,1,2,3,4,4,12312,123,32,123,12,3123,123]
+//implicit return 
+const filteredData = data.filter(num => num > 10 && num < 1000)
+const filteredData2 = data.filter(num => {
+	return num > 10 && num < 1000
+})
+const filteredData3 = data.filter(num => { return num > 10 && num < 1000})
+
+console.log(filteredData)
+
+
 function go() {
 
 	// static test image things
@@ -14,11 +26,6 @@ function go() {
 	const testCanvas = testCanvasElement.getContext('2d');
 	const staticCanvas = staticCanvasElement.getContext('2d');
 
-	// detect bounding rect, regardless of rotation
-	// rotate the image
-	// get imageData with getImageData
-	// give to jsQR
-	
 	function qrCodeDetection(x, y, width, height) {
 		const imageData = staticCanvas.getImageData(x-10, y-10, width+10, height+10)
 		const code = jsQR(imageData.data, width+10, height+10, {});
@@ -38,6 +45,7 @@ function go() {
 
 	testCanvasElement.width = img.width / 2;
 	testCanvasElement.height = img.height / 2;
+	// staticCanvas.rotate(100)
 
 	staticCanvas.drawImage(
 		img,
@@ -62,6 +70,7 @@ function go() {
 	// and draw contours for example
 
 	function fakeModelThing(imageData) {
+		//TODO: get 35/35 squares detected ( its only missing the metadata codes, which are a bit chunkier )
 		let src = cv.imread(imageData);
 		let src1 = cv.imread(imageData);
 		let dst = cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
@@ -87,6 +96,7 @@ function go() {
 		cv.findContours(src, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 		// Draw contours on destination image
 		console.log(contours.size())
+
 		for (let i = 0; i < contours.size(); ++i) {
 			let cnt = contours.get(i)
 			let area = cv.contourArea(cnt, false)
@@ -95,17 +105,37 @@ function go() {
 				// let rect = cv.boundingRect(cnt);
 				let rect = cv.minAreaRect(cnt);
 				let vertices = cv.RotatedRect.points(rect);
+				
+				let rectangleColor = new cv.Scalar(0, 255, 255, 255);
+				for (let i = 0; i < 4; i++) {
+					console.log(vertices[i])
+					cv.line(src1, vertices[i], vertices[(i + 1) % 4], rectangleColor, 2, cv.LINE_AA, 0);
+				}
 				console.log({rect, vertices})
 
-				let rectangleColor = new cv.Scalar(0, 255, 255, 255);
+				//TODO: rotate diagonal images to be perfectly square
+				//TODO: maybe add some cheeky padding
+				//TODO: try to get 32 / 32 (or 35/35)
+				// qrCodeDetection(x, y, width, height)
+				
+				// staticCanvas.rotate(-rect.angle)
+				// console.log(staticCanvas)
+				// staticCanvas.drawImage(
+				// 	img,
+				// 	0,0,
+				// 	img.width,
+				// 	img.height,
+				// 	0,0,
+				// 	img.width / 2,
+				// 	img.height / 2
+				// );
+
+
 				let point1 = new cv.Point(rect.x, rect.y);
 				let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
-				
-				qrCodeDetection(rect.x, rect.y, rect.width, rect.height)
-				
-				cv.rectangle(src1, point1, point2, rectangleColor, 2, cv.LINE_AA, 0);
-				cv.imshow('canvasOutput', dst);
+				// cv.imshow('canvasOutput', dst);
 				// src.delete(); dst.delete(); contours.delete(); hierarchy.delete(); cnt.delete();
+				// break
 			}
 		}
 
