@@ -3,6 +3,8 @@ function stf(input) {
 	newWindow = window.open(uriContent, 'output.txt');
 }
 
+let detectedCodes = []
+
 function go() {
 
 	// static test image things
@@ -12,13 +14,30 @@ function go() {
 	const testCanvas = testCanvasElement.getContext('2d');
 	const staticCanvas = staticCanvasElement.getContext('2d');
 
+	// detect bounding rect, regardless of rotation
+	// rotate the image
+	// get imageData with getImageData
+	// give to jsQR
+	
+	function qrCodeDetection(x, y, width, height) {
+		const imageData = staticCanvas.getImageData(x-10, y-10, width+10, height+10)
+		const code = jsQR(imageData.data, width+10, height+10, {});
+		console.log({code})
+		if (code) {
+			detectedCodes.push(code)
+			console.log(detectedCodes.length, code);
+		} else {
+			console.log("nothing found in image")
+		}
+	}
+
 	// grab image tag, put its data onto the static canvas
 
-	staticCanvasElement.width = img.width / 8;
-	staticCanvasElement.height = img.height / 8;
+	staticCanvasElement.width = img.width / 2;
+	staticCanvasElement.height = img.height / 2;
 
-	testCanvasElement.width = img.width / 8;
-	testCanvasElement.height = img.height / 8;
+	testCanvasElement.width = img.width / 2;
+	testCanvasElement.height = img.height / 2;
 
 	staticCanvas.drawImage(
 		img,
@@ -28,8 +47,8 @@ function go() {
 		img.height,
 		0,
 		0,
-		img.width / 8,
-		img.height / 8
+		img.width / 2,
+		img.height / 2
 	);
 	// you can use this staticTestImage variable to give to your model
 	const staticTestImageData = staticCanvas.getImageData(
@@ -67,16 +86,23 @@ function go() {
 		let hierarchy = new cv.Mat();
 		cv.findContours(src, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 		// Draw contours on destination image
+		console.log(contours.size())
 		for (let i = 0; i < contours.size(); ++i) {
 			let cnt = contours.get(i)
 			let area = cv.contourArea(cnt, false)
-			if(area > 2000 && area < 3000){
+			if(area > staticCanvasElement.height * staticCanvasElement.width/100){
 				// cv.drawContours(src1, contours, i, [255, 0, 0, 255], 1, cv.LINE_8, hierarchy, 200);
-				let rect = cv.boundingRect(cnt);
-				let rectangleColor = new cv.Scalar(255, 0, 0);
+				// let rect = cv.boundingRect(cnt);
+				let rect = cv.minAreaRect(cnt);
+				let vertices = cv.RotatedRect.points(rect);
+				console.log({rect, vertices})
+
+				let rectangleColor = new cv.Scalar(0, 255, 255, 255);
 				let point1 = new cv.Point(rect.x, rect.y);
 				let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
-				console.log(point1, point2)
+				
+				qrCodeDetection(rect.x, rect.y, rect.width, rect.height)
+				
 				cv.rectangle(src1, point1, point2, rectangleColor, 2, cv.LINE_AA, 0);
 				cv.imshow('canvasOutput', dst);
 				// src.delete(); dst.delete(); contours.delete(); hierarchy.delete(); cnt.delete();
