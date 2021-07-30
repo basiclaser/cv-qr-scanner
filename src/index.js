@@ -71,7 +71,15 @@ function go() {
 			let cnt = contours.get(i)
 			let area = cv.contourArea(cnt, false)
 			if(area > 2000 && area < 3000){
-				cv.drawContours(src1, contours, i, [255, 0, 0, 255], 1, cv.LINE_8, hierarchy, 200);
+				// cv.drawContours(src1, contours, i, [255, 0, 0, 255], 1, cv.LINE_8, hierarchy, 200);
+				let rect = cv.boundingRect(cnt);
+				let rectangleColor = new cv.Scalar(255, 0, 0);
+				let point1 = new cv.Point(rect.x, rect.y);
+				let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
+				console.log(point1, point2)
+				cv.rectangle(src1, point1, point2, rectangleColor, 2, cv.LINE_AA, 0);
+				cv.imshow('canvasOutput', dst);
+				// src.delete(); dst.delete(); contours.delete(); hierarchy.delete(); cnt.delete();
 			}
 		}
 
