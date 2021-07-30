@@ -1,9 +1,9 @@
-function stf(input){
+function stf(input) {
 	uriContent = "data:application/octet-stream," + encodeURIComponent(input);
 	newWindow = window.open(uriContent, 'output.txt');
 }
-
-function go(){
+console.log("Hello")
+function go() {
 
 	// static test image things
 	const img = document.querySelector('img');
@@ -44,25 +44,78 @@ function go(){
 
 	function fakeModelThing(imageData) {
 		let src = cv.imread(imageData);
+		let src1 = cv.imread(imageData);
 		let dst = cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
 
-		cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
-
+		cv.cvtColor(src, src, cv.COLOR_BGR2GRAY);
 		cv.medianBlur(src, src, 1);
-		cv.threshold(src, src, 100, 255, cv.THRESH_BINARY);
+
+
+
+		// let M = cv.Mat.eye(3, 3, cv.CV_32FC1);
+		let sharpern_kernel = cv.matFromArray(3, 3, cv.CV_32FC1, [-1, -1, -1, -1, 9, -1, -1, -1, -1]);
+
+		// You can try more different parameters
+		// contrast
+		cv.filter2D(src, src, -1, sharpern_kernel);
+		// cv.imshow('canvasOutput', src);
+
+		cv.threshold(src, src, 20, 255, cv.THRESH_BINARY);
+		// cv.imshow('canvasOutput', src);
+		console.log("Hello2")
+		let kernel = new cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(3, 3))
+		// let kernel = cv.Mat.ones(5, 5, cv.CV_8U);
+		let anchor = new cv.Point(-1, -1);
+		console.log("Hello3")
+		// kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+		// cv.morphologyEx(src, src, cv.MORPH_CLOSE, kernel, iterations = 2)
+		cv.morphologyEx(src, src, cv.MORPH_OPEN, kernel, anchor, 2)
+		// close = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations = 2)
+		console.log("Hello4")
+		// cv.imshow('canvasOutput', src);
+		console.log("Hello5")
+
+
 		let contours = new cv.MatVector();
 		let hierarchy = new cv.Mat();
 		cv.findContours(src, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
-    
+		// cv.RETR_CCOMP   cv.RETR_EXTERNAL   cv.RETR_LIST
 		// Draw contours on destination image
+		console.log(hierarchy.size())
+		console.log(contours.size())
 		for (let i = 0; i < contours.size(); ++i) {
-		  let color = new cv.Scalar(0, 255, 0);
-		  cv.drawContours(dst, contours, i, color, 1, cv.LINE_8, hierarchy, 100);
+			let cnt = contours.get(i)
+			console.log("CNT", cnt)
+			let area = cv.contourArea(cnt, false)
+			console.log("AREA",area)
+			// let color = new cv.Scalar(50, 255, 0);
+			if(area > 2000 && area < 3000){
+				cv.drawContours(src1, contours, i, [255, 0, 0, 255], 1, cv.LINE_8, hierarchy, 200);
+			}
 		}
-		
+
+		// const contoursToDraw = new cv.MatVector();
+		// for (let i = 0; i < contours.size(); ++i) {
+		// 	const cnt = contours.get(i);
+
+		// 	const cntSize = cnt.size().width * cnt.size().height;
+		// 	for (let j = 0; j < cntSize; j++) {
+		// 		const [x, y] = cnt.intPtr(j); //cnt[j] -> ?
+		// 		const vertex = { x, y };
+		// 		console.log('vertex', vertex);
+		// 		cv.putText(cnt, 'some text', vertex, cv.FONT_HERSHEY_SIMPLEX, 1, [255, 0, 255, 255]);
+		// 		cv.circle(cnt, vertex, 3, [0, 255, 0, 255], cv.FILLED);
+
+		// 	}
+		// 	contoursToDraw.push_back(cnt);
+		// }
+
 		// Show result and clean up
-		cv.imshow('canvasOutput', dst);
-		src.delete(); dst.delete(); contours.delete(); hierarchy.delete();
+		cv.imshow('canvasOutput', src1);
+		src.delete(); src1.delete();dst.delete(); contours.delete(); hierarchy.delete();
+
+
+
 		// You can try more different parameters
 		// cv.findContours(
 		// 	src,
