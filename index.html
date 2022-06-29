@@ -1,27 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<title>computer vision template</title>
-		<link rel="stylesheet" href="src/styles.css">
-		<script src="src/opencv.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-		<script src="src/index.js"></script>
-	</head>
-	<body>
-		<p>hello</p>
-		<img
-			src="public/static-test-example.jpg"
-			crossorigin="Anonymous"
-			style="display: none"
-			onload="go()"
-		/>
-		<canvas id="staticCanvas"></canvas>
-		<canvas id="canvasOutput"></canvas>
-		<canvas id="testCanvas"></canvas>
-		<video></video>
-	</body>
-	
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<title>computer vision template</title>
+	<link rel="stylesheet" href="src/styles.css">
+	<script src="src/opencv.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+	<script src="src/index.js"></script>
+</head>
+
+<body class="flex">
+	<div id="all image stuff" class="flex">
+		<img src="public/static-test-example.jpg" crossorigin="Anonymous" style="display: none"
+			onload="processImage()" />
+		<canvas style="display: none" id="imageInputCanvas"></canvas>
+		<canvas id="imageOutputCanvas"></canvas>
+	</div>
+
+	<div id="all video stuff" class="flex">
+		<video style="display: none"></video>
+		<canvas style="display: none" id="videoInputCanvas"></canvas>
+		<canvas id="videoOutputCanvas"></canvas>
+	</div>
+
+
+
+</body>
+<script src="gfx.js"></script>
+<script src="process.js"></script>
+<script src="process-img.js"></script>
+<script src="process-vid.js"></script>
+
 </html>

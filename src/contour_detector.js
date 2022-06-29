@@ -1,5 +1,4 @@
 // import cv from "opencv.js";
-console.log("we are here");
 let src = cv.imread("img");
 let dst = cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
 cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
