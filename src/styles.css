@@ -15,3 +15,5 @@ body {
 canvas {
   height: 50vh;
 }
+
+#virtualOutputCanvas {}

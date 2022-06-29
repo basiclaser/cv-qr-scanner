@@ -1,5 +1,5 @@
 function process(canvasElement, outputCanvasId) {
-    // console.log(canvasElement, outputCanvasId)
+    console.log(canvasElement, outputCanvasId)
     try {
         //TODO: get 35/35 squares detected ( its only missing the metadata codes, which are a bit chunkier )
         let src = cv.imread(canvasElement);
@@ -8,7 +8,6 @@ function process(canvasElement, outputCanvasId) {
 
         cv.cvtColor(src, src, cv.COLOR_BGR2GRAY);
         cv.medianBlur(src, src, 1);
-
 
         let sharpern_kernel = cv.matFromArray(3, 3, cv.CV_32FC1, [-1, -1, -1, -1, 9, -1, -1, -1, -1]);
 
@@ -42,9 +41,10 @@ function process(canvasElement, outputCanvasId) {
                     // console.log(vertices[i])
                     cv.line(src1, vertices[i], vertices[(i + 1) % 4], rectangleColor, 2, cv.LINE_AA, 0);
                 }
-                // console.log(canvasElement.id, { rect, vertices })
+                console.log(canvasElement.id, { rect, vertices })
             }
         }
+        console.log(canvasElement + " checked")
         // Show result and clean up
         cv.imshow(outputCanvasId, src1);
         src.delete();
