@@ -3,6 +3,8 @@
 const video = document.querySelector("video");
 const videoInputCanvas = document.getElementById("videoInputCanvas");
 const vidCtx = videoInputCanvas.getContext("2d");
+const videoOutputCanvas = document.getElementById("videoOutputCanvas");
+const outCtx = videoInputCanvas.getContext("2d");
 
 
 // getting the camera feed
@@ -26,8 +28,8 @@ function tick() {
 
         vidCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 
-        process(videoInputCanvas, "videoOutputCanvas")
-
+        const foundShapes = process(videoInputCanvas, "videoOutputCanvas")
+        foundShapes.forEach(s => drawPolygon(s, outCtx))
     }
     requestAnimationFrame(tick);
     // this runs the tick function again and again (like 50 times a second)

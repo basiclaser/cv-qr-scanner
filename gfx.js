@@ -1,6 +1,10 @@
 // this will draw some sort of rectangle based on 4 xy points
 function drawPolygon(shape, thisCanvas) {
-    const { a, b, c, d } = shape;
+    console.log(shape, thisCanvas)
+    const a = shape[0]
+    const b = shape[1]
+    const c = shape[2]
+    const d = shape[3]
     thisCanvas.strokeStyle = "lime";
     thisCanvas.beginPath();
     thisCanvas.moveTo(a.x, a.y);

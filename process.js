@@ -1,5 +1,5 @@
 function process(canvasElement, outputCanvasId) {
-    console.log(canvasElement, outputCanvasId)
+    const foundShapes = []
     try {
         //TODO: get 35/35 squares detected ( its only missing the metadata codes, which are a bit chunkier )
         let src = cv.imread(canvasElement);
@@ -25,7 +25,6 @@ function process(canvasElement, outputCanvasId) {
         let hierarchy = new cv.Mat();
         cv.findContours(src, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
         // Draw contours on destination image
-        // console.log(contours.size())
 
         for (let i = 0; i < contours.size(); ++i) {
             let cnt = contours.get(i)
@@ -35,16 +34,16 @@ function process(canvasElement, outputCanvasId) {
                 // let rect = cv.boundingRect(cnt);
                 let rect = cv.minAreaRect(cnt);
                 let vertices = cv.RotatedRect.points(rect);
-
                 let rectangleColor = new cv.Scalar(0, 255, 255, 255);
                 for (let i = 0; i < 4; i++) {
                     // console.log(vertices[i])
                     cv.line(src1, vertices[i], vertices[(i + 1) % 4], rectangleColor, 2, cv.LINE_AA, 0);
                 }
-                console.log(canvasElement.id, { rect, vertices })
+                // console.log(canvasElement.id, { rect, vertices })
+                foundShapes.push(vertices)
             }
         }
-        console.log(canvasElement + " checked")
+        // console.log(canvasElement, outputCanvasId, src1)
         // Show result and clean up
         cv.imshow(outputCanvasId, src1);
         src.delete();
@@ -52,6 +51,7 @@ function process(canvasElement, outputCanvasId) {
         dst.delete();
         contours.delete();
         hierarchy.delete();
+        return foundShapes
     } catch (error) {
         console.log(error)
     }
