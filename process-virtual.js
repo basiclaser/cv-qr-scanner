@@ -4,7 +4,6 @@ function tick() {
     console.log(virtualInputCanvas)
     const imgCtx = virtualInputCanvas.getContext("2d");
 
-    // grab image tag, put its data onto the static canvas
     virtualInputCanvas.width = img.width;
     virtualInputCanvas.height = img.height;
     imgCtx.drawImage(
